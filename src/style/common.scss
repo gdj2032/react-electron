@@ -1,0 +1,49 @@
+@import './color.scss';
+.m-modal {
+  background: #FFF;
+  padding: 30px;
+  margin: 20px;
+  box-shadow: 0 0 8px 0 $m-shadow;
+  border-radius: 4px;
+}
+.ant-input {
+  border-radius: 2px;
+}
+.ant-input-search-button {
+  border-radius: 2px;
+}
+.ant-btn {
+  border-radius: 2px; 
+}
+
+.page-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.search-content {
+  margin-bottom: 15px;
+}
+
+.buttons {
+  margin-bottom: 15px;
+  text-align: right;
+
+  button + button {
+    margin-left: 10px;
+  }
+}
+
+.table-operation-column{
+    color: $line-active;
+      > span {
+        display: inline-block;
+        text-decoration: underline;
+      }
+      > span:hover {
+        cursor: pointer;
+      }
+      span + span {
+        margin-left: 10px;
+      }
+ }

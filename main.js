@@ -8,7 +8,7 @@ let mainWindow
 
 function createWindow () {
 //创建浏览器窗口,宽高自定义
-mainWindow = new BrowserWindow({width: 800, height: 600})
+mainWindow = new BrowserWindow({width: 1000, height: 700})
 
   /*
    * 加载应用-----  electron-quick-start中默认的加载入口
