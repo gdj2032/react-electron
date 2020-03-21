@@ -2,9 +2,9 @@ import * as React from 'react';
 import './index.scss';
 import { connect } from 'react-redux';
 import { reduxStore } from 'utils/visible';
-import { HookDemo } from 'utils/hook';
-import SvgImg from 'component/SvgImg';
-import svg_rabbit from 'static/svg/svg_rabbit.svg';
+// import { HookDemo } from 'utils/hook';
+// import SvgImg from 'component/SvgImg';
+// import svg_rabbit from 'static/svg/svg_rabbit.svg';
 
 interface Props {
   dispatch: any,
@@ -17,10 +17,10 @@ class HomePage extends React.Component<Props> {
 
   render() {
     return (
-      <div className="HomePage">
-        <h2>HomePage</h2>
-        <HookDemo />
-        <SvgImg src={svg_rabbit} width={50} height={50} />
+      <div className="g-home">
+        <div>Home</div>
+        {/* <HookDemo /> */}
+        {/* <SvgImg src={svg_rabbit} width={50} height={50} /> */}
       </div>
     );
   }
