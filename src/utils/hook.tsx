@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { reduxStore } from 'utils/visible';
-import { updateAccount } from 'actions/setting';
+// import { reduxStore } from 'utils/visible';
 
 const HookDemo = () => {
   // 声明一个新的叫做 “count” 的 state 变量
@@ -10,7 +9,7 @@ const HookDemo = () => {
   useEffect(() => {
     // 使用浏览器的 API 更新页面标题
     document.title = `You clicked ${count} times`;
-    reduxStore.dispatch(updateAccount({ count }));
+    // reduxStore.dispatch(updateAccount({ count }));
   }, [count]);// 仅在 count 更改时更新=> 性能的优化
 
   //如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（[]）作为第二个参数。

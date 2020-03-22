@@ -43,7 +43,7 @@ export function distinct(oldArr: any, prop: any) {
   for (let i = 0; i < oldArr.length; i += 1) {
     let flag = true;
     for (let j = 0; j < result.length; j += 1) {
-      if (oldArr[i][prop] === result[j][prop]) {
+      if (oldArr[i][prop].trim() === result[j][prop].trim()) {
         flag = false;
       }
     }
@@ -52,4 +52,35 @@ export function distinct(oldArr: any, prop: any) {
     }
   }
   return result;
+}
+
+
+export const UTCToLocalYMD = (date?: Date) => moment.utc(date).local().format('YYYY-MM-DD');
+
+export const UTCToLocal = (date?: Date) => moment.utc(date).local().format('YYYY-MM-DD hh:mm:ss');
+
+export const getFileSize = (size: number) => {
+  if(size < 1024) {
+    return `${size}Bytes`
+  }
+  else if(size < 1048576) {
+    return `${(size / 1024).toFixed(2)}KB`
+  }
+  else if(size < 1073741824) {
+    return `${(size / 1048576).toFixed(2)}MB`
+  }
+  else {
+    return `${(size / 1073741824).toFixed(2)}GB`
+  };
+}
+
+export /**
+ * 数组去重
+ *
+ * @param {any[]} arr
+ * @returns
+ */
+const unique = (arr: any[]) => {
+  arr = arr.map((e: any) => e.trim())
+  return Array.from(new Set(arr))
 }

@@ -3,12 +3,17 @@ import './index.scss';
 import { connect } from 'react-redux';
 import { reduxStore } from 'utils/visible';
 import { message } from 'antd';
+import { unique } from 'utils';
 
 interface Props {
   dispatch: any,
   local: any,
 }
 class HomePage extends React.Component<Props> {
+
+  state = {
+    books: [],
+  }
   componentDidMount() {
     console.log('this.props', this.props)
     reduxStore.dispatch = this.props.dispatch;
@@ -27,8 +32,27 @@ class HomePage extends React.Component<Props> {
       // 新建 FileReader 对象
       reader.onload = function () {
         // 当 FileReader 读取文件时候，读取的结果会放在 FileReader.result 属性中
-        const txt = this.result;
+        const txt: any = this.result;
         console.log("HomePage -> reader.onload -> txt", txt)
+        const createTime = new Date()
+        const id = createTime.getTime()
+        const size = file.size;
+        const author = txt.split('\n').filter((e: any) => e.indexOf('作者') !== -1)[0].split("作者：")[1]
+        const title = txt.match(/《(\S*)》/)[1]
+        const bookData: IBookData = { id, size, createTime, name: title, author }
+        console.log("HomePage -> reader.onload -> bookData", bookData)
+        const chapter = txt.split('\n').filter((e: any) => e.indexOf('第') !== -1 && e.indexOf('章') !== -1)
+        console.log("HomePage -> reader.onload -> chapter", unique(chapter))
+        // let textData = [];
+        let content = txt;
+        chapter.map((item: any, idx: number) => {
+          const arr = content.split(item)
+          content = arr[1]
+          const cont = arr[0]
+          if (idx === 3) {
+            console.log("HomePage -> reader.onload -> cont", cont, cont.length)
+          }
+        })
       };
       // 设置以什么方式读取文件，这里以文本方式
       reader.readAsText(file, 'gb2312');
@@ -48,7 +72,9 @@ class HomePage extends React.Component<Props> {
             </span>
           </div>
         </div>
-        <div></div>
+        <div className="p-book-list">
+
+        </div>
       </div>
     );
   }

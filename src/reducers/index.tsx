@@ -7,7 +7,6 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state: any, action: any) => {
-  console.log(state, action);
   if(state) {
     reduxStore.getState = state;
   }
