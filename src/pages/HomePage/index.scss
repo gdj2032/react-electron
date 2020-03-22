@@ -5,7 +5,7 @@
     padding: 0 20px;
     height: 60px;
     line-height: 60px;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #ccc;
     background-color: rgb(251, 255, 195);
     .header-title {
       font-size: 24px;
@@ -39,6 +39,19 @@
     }
   }
   .p-book-list {
-    padding: 20px;
+    padding: 30px;
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    .book-item {
+      width: 140px;
+      height: 180px;
+      border: 1px solid #000;
+      margin-bottom: 20px;
+      margin-right: 20px;
+    }
+    .book-item-last {
+      margin-right: 0;
+    }
   }
 }

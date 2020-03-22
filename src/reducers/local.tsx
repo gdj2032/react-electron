@@ -3,7 +3,7 @@ import { createReducer } from 'redux-act';
 import types from 'actions/types';
 
 const typeBooks: any = types.books;
-const typeText: any = types.text;
+const typeTexts: any = types.texts;
 
 const local = combineReducers({
   books: createReducer({
@@ -11,8 +11,8 @@ const local = combineReducers({
   }, {
     data: [],
   }),
-  text: createReducer({
-    [typeText]: (state, payload) => ({ ...state, ...payload.value }),
+  texts: createReducer({
+    [typeTexts]: (state, payload) => ({ ...state, ...payload.value }),
   }, {
     data: [],
   }),

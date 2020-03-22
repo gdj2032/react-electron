@@ -16,12 +16,13 @@ interface ITextData {
   size: number; //txt大小 字节
   currentPage: number; //最后一次看书的页码
   menu: IMenu[] //目录
+  name: string;
 }
 
 interface IData {
   type: 'synopsis' | 'title' | 'text';
   content: string;
-  page?: number; //如果是title 则需要跳转页面
+  page?: number; //如果是title 则是需要跳转页面
 }
 
 interface IMenu {

@@ -2,7 +2,7 @@ import { createAction } from 'redux-act';
 
 const types = {
   books: createAction('BOOKS'),
-  text: createAction('TEXT'),
+  texts: createAction('TEXTS'),
 }
 
 export default types;
