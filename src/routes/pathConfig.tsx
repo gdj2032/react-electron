@@ -1,5 +1,6 @@
 interface RoutePathFormat {
   home: string;
+  book: string;
 }
 function generatePath(path: string) {
   return `/app/${path}`;
@@ -7,6 +8,7 @@ function generatePath(path: string) {
 
 const pathConfig: RoutePathFormat = {
   home: generatePath('home'),
+  book: generatePath('book'),
 };
 
 export default pathConfig;

@@ -1,20 +1,25 @@
 import { RouteProps } from 'react-router-dom';
 import {
-  HomePage
+  HomePage, BookPage
 } from 'pages';
 import pathConfig from './pathConfig';
 
-const routeConfig: CustomRouteProps [] = [
-    {
-        path: pathConfig.home,
-        component: HomePage,
-        exact: true,
-    },
-    // {
-    //     path: [`${pathConfig.productEdit}/:productId/:categoryType`, pathConfig.productEdit],
-    //     component: ProductEditPage,
-    //     exact: true,
-    // },
+const routeConfig: CustomRouteProps[] = [
+  {
+    path: pathConfig.home,
+    component: HomePage,
+    exact: true,
+  },
+  {
+    path: pathConfig.book,
+    component: BookPage,
+    exact: true,
+  },
+  // {
+  //     path: [`${pathConfig.productEdit}/:productId/:categoryType`, pathConfig.productEdit],
+  //     component: ProductEditPage,
+  //     exact: true,
+  // },
 ];
 
 interface CustomRouteProps extends RouteProps {
