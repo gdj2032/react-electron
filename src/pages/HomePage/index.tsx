@@ -2,10 +2,12 @@ import * as React from 'react';
 import './index.scss';
 import { connect } from 'react-redux';
 import { reduxStore } from 'utils/visible';
-import { message } from 'antd';
+import { message, Dropdown, Menu } from 'antd';
 import { unique } from 'utils';
-import { PAGE_SIZE } from 'constants/index';
+import { PAGE_SIZE, COLOR } from 'constants/index';
 import { updateBooks, updateTexts } from 'actions/setting';
+import Svg from 'component/Svg';
+import DeleteSvg from 'static/svg/svg_delete.svg'
 
 interface Props {
   dispatch: any,
@@ -15,15 +17,16 @@ class HomePage extends React.Component<Props> {
 
   state = {
     booksData: this.props.local.books && this.props.local.books.data,
+    showNameAuthor: false,
+    isManage: false,
   }
   componentDidMount() {
-    console.log('this.props', this.props)
     reduxStore.dispatch = this.props.dispatch;
   }
 
   onInputFile = (e: any) => {
     const { dispatch, local } = this.props;
-    // console.log("HomePage -> onInputFile -> dispatch", dispatch)
+    console.log("HomePage -> onInputFile -> dispatch", dispatch)
     const { texts, books } = local;
     const files = e.nativeEvent.target.files;
     const self = this;
@@ -42,13 +45,13 @@ class HomePage extends React.Component<Props> {
         const createTime = new Date()
         const id = createTime.getTime()
         const size = file.size;
-        const author = txt.split('\n').filter((e: any) => e.indexOf('作者') !== -1)[0].split("作者：")[1]
-        const name = txt.match(/《(\S*)》/)[1]
-        const isExit = books && books.data && books.data.find((e: any) => e.author === author && e.name === name);
-        if (isExit) {
-          message.error('小说已存在');
-          return;
-        }
+        const author = self.getAuthor(txt)
+        const name = self.getName(txt)
+        // const isExit = books && books.data && books.data.find((e: any) => e.author === author && e.name === name);
+        // if (isExit) {
+        //   message.error('小说已存在');
+        //   return;
+        // }
         const bookData: IBookData = { id, size, createTime, name, author }
         let chapter = self.getChapter(txt);
         let content = txt;
@@ -118,31 +121,130 @@ class HomePage extends React.Component<Props> {
   }
 
   getChapter = (txt: any) => {
-    let chapter = txt.split('\n').filter((e: any) => e.indexOf('第') !== -1 && e.indexOf('章') !== -1)
+    let chapter = txt.split('\n').filter((e: any) => e.includes('第') && e.includes('章'))
     if (chapter.length > 100) {
       return chapter;
     }
-    chapter = txt.split('\n').filter((e: any) => e.indexOf('章 ') !== -1)
+    chapter = txt.split('\n').filter((e: any) => e.includes('章 '))
     return chapter;
+  }
+
+  getName = (txt: any) => {
+    const exit = txt.split('\n').filter((e: any) => e.includes('书名'));
+    if (exit.length > 0) {
+      return exit[0].split("书名：")[1]
+    }
+    const n = txt.match(/《(\S*)》/)
+    if (n) {
+      return n[1]
+    }
+  }
+
+  getAuthor = (txt: any) => {
+    return txt.split('\n').filter((e: any) => e.includes('作者'))[0].split("作者：")[1]
+  }
+
+  menus = [
+    {
+      text: '最近阅读',
+      id: 1,
+      type: 'sort'
+    },
+    {
+      text: '添加日期',
+      id: 2,
+      type: 'sort'
+    },
+    {
+      text: `${this.state.showNameAuthor ? '隐藏' : '显示'}书名和作者`,
+      id: 3,
+      type: 'show'
+    },
+  ]
+
+  menu = (
+    <Menu>
+      {
+        this.menus.map((e: any) => {
+          return (
+            <Menu.Item key={e.id}>
+              <a onClick={() => this.onSortClick(e)}>{e.text}</a>
+            </Menu.Item>
+          )
+        })
+      }
+    </Menu>
+  )
+
+  sortWay = () => {
+    return (
+      <Dropdown overlay={this.menu}>
+        <a className="ant-dropdown-link">
+          排序方式
+        </a>
+      </Dropdown>
+    )
+  }
+
+  onSortClick = (e: any) => {
+    const { id, type } = e;
+    if (type === 'sort') {
+      const { booksData } = this.state;
+      if (id === 2) {
+        const data = booksData.sort((a: any, b: any) => a.createTime > b.createTime)
+        console.log("HomePage -> onSortClick -> data", data)
+        this.setState({ booksData: data })
+      }
+      if (id === 1) {
+        const data = booksData.sort((a: any, b: any) => a.modifyTime > b.modifyTime)
+        console.log("HomePage -> onSortClick -> data", data)
+        this.setState({ booksData: data })
+      }
+    }
+    if (type === 'show') {
+      this.setState({ showNameAuthor: !this.state.showNameAuthor })
+    }
+  }
+
+  onManageClick = () => {
+    this.setState({ isManage: !this.state.isManage })
   }
 
   bookList = (item: IBookData, idx: number) => {
     return (
-      <div className={`book-item ${ idx !== 0 && idx % 5 === 0 ? 'book-item-last' : '' }`} key={item.id}>
-        <div>{item.name}</div>
+      <div className={`book-item ${idx !== 0 && idx % 5 === 0 ? 'book-item-last' : ''}`} key={item.id}>
+        <div className="i-top-bg" style={{ backgroundColor: COLOR[Number(item.id) % 20] }}>
+          <div className="i-top-name">{item.name}</div>
+          <div className="i-top-author">{item.author}</div>
+        </div>
+        {
+          this.state.showNameAuthor &&
+          <div className="i-name-author">
+            <div>{item.name}</div>
+            <div>{item.author}</div>
+          </div>
+        }
+        {
+          this.state.isManage &&
+          <div className="i-delete">
+            <Svg src={DeleteSvg} />
+          </div>
+        }
       </div>
     )
   }
 
   render() {
-    const { booksData } = this.state;
+    const { booksData, isManage } = this.state;
     return (
       <div className="g-home">
         <div className="p-header">
           <div className="header-title">txt小说阅读器</div>
           <div className="header-button">
-            <span className="sort">排序方式</span>
-            <span className="manage">管理</span>
+            <span className="sort">{this.sortWay()}</span>
+            <span className="manage" onClick={this.onManageClick}>
+              { isManage ? '取消' : '管理' }
+            </span>
             <span className="file">
               添加<input type="file" name="" id="" onChange={this.onInputFile} />
             </span>
@@ -150,7 +252,7 @@ class HomePage extends React.Component<Props> {
         </div>
         <div className="p-book-list">
           {
-            booksData.map((item: any, idx: number) => this.bookList(item, idx))
+            booksData.map((item: IBookData, idx: number) => this.bookList(item, idx))
           }
         </div>
       </div>

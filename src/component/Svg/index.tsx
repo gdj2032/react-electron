@@ -3,7 +3,16 @@ import './index.scss';
 // import 'static/svg/svg_rabbit.svg';
 // import svg_phone from 'static/svg/svg_phone.svg';{ ReactComponent as Logo }
 
-class SvgImg extends React.Component<any> {
+interface IProps {
+  src: any;
+  width?: string | number | undefined;
+  height?: string | number | undefined;
+  onClick?: () => void;
+  className?: any;
+  alt?: any;
+}
+
+class Svg extends React.Component<IProps> {
   static defaultProps = {
     visible: false,
   }
@@ -19,11 +28,11 @@ class SvgImg extends React.Component<any> {
     } = this.props;
 
     return (
-      <div onClick={onClick || null} className={className || ''}>
-        <img src={src} width={width || null} height={height || null} alt={`${alt || ''}`} />
+      <div onClick={() => onClick && onClick()} className={className || ''}>
+        <img src={src} width={width} height={height} alt={`${alt || ''}`} />
       </div>
     );
   }
 }
 
-export default SvgImg;
+export default Svg;
