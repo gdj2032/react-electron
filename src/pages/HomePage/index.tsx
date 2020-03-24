@@ -7,7 +7,7 @@ import { unique } from 'utils';
 import { PAGE_SIZE, COLOR } from 'constants/index';
 import { updateBooks, updateTexts } from 'actions/setting';
 import Svg from 'component/Svg';
-import DeleteSvg from 'static/svg/svg_delete.svg'
+import DeleteSvg from 'static/delete.svg'
 
 interface Props {
   dispatch: any,
@@ -15,19 +15,28 @@ interface Props {
 }
 class HomePage extends React.Component<Props> {
 
+  fileRefs: any
+
   state = {
     booksData: this.props.local.books && this.props.local.books.data,
-    showNameAuthor: false,
+    textsData: this.props.local.texts && this.props.local.texts.data,
     isManage: false,
   }
   componentDidMount() {
     reduxStore.dispatch = this.props.dispatch;
   }
 
+  componentWillReceiveProps(nextProps: any) {
+    this.setState({
+      booksData: nextProps.local.books && nextProps.local.books.data,
+      textsData: this.props.local.texts && this.props.local.texts.data,
+    })
+  }
+
   onInputFile = (e: any) => {
-    const { dispatch, local } = this.props;
-    console.log("HomePage -> onInputFile -> dispatch", dispatch)
-    const { texts, books } = local;
+    const { dispatch } = this.props;
+    // console.log("HomePage -> onInputFile -> dispatch", dispatch)
+    const { textsData: texts, booksData: books } = this.state;
     const files = e.nativeEvent.target.files;
     const self = this;
     if (files.length > 0) {
@@ -46,12 +55,14 @@ class HomePage extends React.Component<Props> {
         const id = createTime.getTime()
         const size = file.size;
         const author = self.getAuthor(txt)
-        const name = self.getName(txt)
-        // const isExit = books && books.data && books.data.find((e: any) => e.author === author && e.name === name);
-        // if (isExit) {
-        //   message.error('小说已存在');
-        //   return;
-        // }
+        const name = self.getName(txt, file)
+        const isExit = books && books.find((e: any) => e.author === author && e.name === name);
+        console.log("HomePage -> reader.onload -> isExit", isExit)
+        if (isExit) {
+          message.error('小说已存在');
+          self.fileRefs.value = null
+          return;
+        }
         const bookData: IBookData = { id, size, createTime, name, author }
         let chapter = self.getChapter(txt);
         let content = txt;
@@ -106,14 +117,15 @@ class HomePage extends React.Component<Props> {
           }
         })
         const textData: ITextData = { id, size, pages: data.length, data, menu, currentPage: 1, name };
-        const booksData = (books && books.data) || [];
-        const textsData = (texts && texts.data) || [];
+        const booksData = (books) || [];
+        const textsData = (texts) || [];
         booksData.unshift(bookData)
         // console.log("HomePage -> reader.onload -> booksData", booksData)
         textsData.push(textData)
         // console.log("HomePage -> reader.onload -> textsData", textsData)
         dispatch(updateBooks({ data: booksData }))
         dispatch(updateTexts({ data: textsData }))
+        self.fileRefs.value = null
       };
       // 设置以什么方式读取文件，这里以文本方式
       reader.readAsText(file, 'gb2312');
@@ -129,15 +141,19 @@ class HomePage extends React.Component<Props> {
     return chapter;
   }
 
-  getName = (txt: any) => {
+  getName = (txt: any, file: any) => {
     const exit = txt.split('\n').filter((e: any) => e.includes('书名'));
     if (exit.length > 0) {
-      return exit[0].split("书名：")[1]
+      const n = exit[0].split("书名：");
+      if (n.length > 1) {
+        return n[1]
+      }
     }
     const n = txt.match(/《(\S*)》/)
     if (n) {
       return n[1]
     }
+    return file.name.split('.')[0].trim()
   }
 
   getAuthor = (txt: any) => {
@@ -154,11 +170,6 @@ class HomePage extends React.Component<Props> {
       text: '添加日期',
       id: 2,
       type: 'sort'
-    },
-    {
-      text: `${this.state.showNameAuthor ? '隐藏' : '显示'}书名和作者`,
-      id: 3,
-      type: 'show'
     },
   ]
 
@@ -187,22 +198,17 @@ class HomePage extends React.Component<Props> {
   }
 
   onSortClick = (e: any) => {
-    const { id, type } = e;
-    if (type === 'sort') {
-      const { booksData } = this.state;
-      if (id === 2) {
-        const data = booksData.sort((a: any, b: any) => a.createTime > b.createTime)
-        console.log("HomePage -> onSortClick -> data", data)
-        this.setState({ booksData: data })
-      }
-      if (id === 1) {
-        const data = booksData.sort((a: any, b: any) => a.modifyTime > b.modifyTime)
-        console.log("HomePage -> onSortClick -> data", data)
-        this.setState({ booksData: data })
-      }
+    const { id } = e;
+    const { booksData } = this.state;
+    if (id === 2) {
+      const data = booksData.sort((a: any, b: any) => a.createTime > b.createTime)
+      console.log("HomePage -> onSortClick -> data", data)
+      this.setState({ booksData: data })
     }
-    if (type === 'show') {
-      this.setState({ showNameAuthor: !this.state.showNameAuthor })
+    if (id === 1) {
+      const data = booksData.sort((a: any, b: any) => a.modifyTime > b.modifyTime)
+      console.log("HomePage -> onSortClick -> data", data)
+      this.setState({ booksData: data })
     }
   }
 
@@ -213,25 +219,28 @@ class HomePage extends React.Component<Props> {
   bookList = (item: IBookData, idx: number) => {
     return (
       <div className={`book-item ${idx !== 0 && idx % 5 === 0 ? 'book-item-last' : ''}`} key={item.id}>
-        <div className="i-top-bg" style={{ backgroundColor: COLOR[Number(item.id) % 20] }}>
+        <div className="i-top-bg" style={{ backgroundColor: COLOR[Number(item.id) % COLOR.length] }}>
           <div className="i-top-name">{item.name}</div>
           <div className="i-top-author">{item.author}</div>
         </div>
         {
-          this.state.showNameAuthor &&
-          <div className="i-name-author">
-            <div>{item.name}</div>
-            <div>{item.author}</div>
-          </div>
-        }
-        {
           this.state.isManage &&
-          <div className="i-delete">
-            <Svg src={DeleteSvg} />
+          <div className="i-delete" onClick={() => this.onDelete(item)}>
+            <Svg src={DeleteSvg} width="20" height="20" />
           </div>
         }
       </div>
     )
+  }
+
+  onDelete = (item: IBookData) => {
+    const { id } = item;
+    const { dispatch, local } = this.props;
+    const { texts, books } = local;
+    const booksData = books.data.filter((e: IBookData) => e.id !== id)
+    const textsData = texts.data.filter((e: IBookData) => e.id !== id)
+    dispatch(updateBooks({ data: booksData }))
+    dispatch(updateTexts({ data: textsData }))
   }
 
   render() {
@@ -243,10 +252,10 @@ class HomePage extends React.Component<Props> {
           <div className="header-button">
             <span className="sort">{this.sortWay()}</span>
             <span className="manage" onClick={this.onManageClick}>
-              { isManage ? '取消' : '管理' }
+              {isManage ? '取消' : '管理'}
             </span>
             <span className="file">
-              添加<input type="file" name="" id="" onChange={this.onInputFile} />
+              添加<input type="file" name="" id="" onChange={this.onInputFile} ref={(c: any) => this.fileRefs = c} />
             </span>
           </div>
         </div>
