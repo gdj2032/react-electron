@@ -5,21 +5,23 @@ import { reduxStore } from 'utils/visible';
 import { message, Dropdown, Menu } from 'antd';
 import { unique } from 'utils';
 import { PAGE_SIZE, COLOR } from 'constants/index';
-import { updateBooks, updateTexts } from 'actions/setting';
+import { updateLocal } from 'actions/setting';
 import Svg from 'component/Svg';
 import DeleteSvg from 'static/delete.svg'
+import pathConfig from 'routes/pathConfig';
 
 interface Props {
-  dispatch: any,
-  local: any,
+  dispatch: any;
+  local: any;
+  history: any;
 }
 class HomePage extends React.Component<Props> {
 
   fileRefs: any
 
   state = {
-    booksData: this.props.local.books && this.props.local.books.data,
-    textsData: this.props.local.texts && this.props.local.texts.data,
+    booksData: this.props.local && this.props.local.books,
+    textsData: this.props.local && this.props.local.texts,
     isManage: false,
   }
   componentDidMount() {
@@ -28,8 +30,8 @@ class HomePage extends React.Component<Props> {
 
   componentWillReceiveProps(nextProps: any) {
     this.setState({
-      booksData: nextProps.local.books && nextProps.local.books.data,
-      textsData: this.props.local.texts && this.props.local.texts.data,
+      booksData: this.props.local && this.props.local.books,
+      textsData: this.props.local && this.props.local.texts,
     })
   }
 
@@ -65,57 +67,75 @@ class HomePage extends React.Component<Props> {
         }
         const bookData: IBookData = { id, size, createTime, name, author }
         let chapter = self.getChapter(txt);
-        let content = txt;
         // 正文内容信息
         const data: IData[] = []
         const menu: IMenu[] = []
-        chapter = unique(chapter)
-        chapter.map((item: any, idx: number) => {
-          const arr = content.split(item)
-          content = arr[arr.length - 1];
-          const str = arr[0]
-          if (!str || str === '\n') return;
-          if (idx === 0) {
+        if (!chapter) {
+          const len = txt.length;
+          const times = Math.ceil(len / PAGE_SIZE)
+          for (let i = 0; i < times; i++) {
+            if (i === 0) {
+              menu.push({ page: data.length + 1, title: `${i + 1}` })
+            }
+            const a = txt.substr(i * PAGE_SIZE, PAGE_SIZE)
             const d: IData = {
-              type: 'synopsis',
-              content: str,
-              page: 1,
+              type: 'text',
+              content: a,
+              page: data.length + 1,
             }
             data.push(d)
-            menu.push({ page: 1, title: '简介' })
-          } else {
-            const len = str.length;
-            const times = Math.ceil(len / PAGE_SIZE)
-            for (let i = 0; i < times; i++) {
-              if (i === 0) {
-                menu.push({ page: data.length + 1, title: chapter[idx - 1].trim() })
-              }
-              const a = str.substr(i * PAGE_SIZE, PAGE_SIZE)
+            menu.push({ page: data.length + 1, title: `${i + 1}` })
+          }
+        } else {
+          let content = txt;
+          chapter = unique(chapter)
+          chapter.map((item: any, idx: number) => {
+            const arr = content.split(item)
+            content = arr[arr.length - 1];
+            const str = arr[0]
+            if (!str || str === '\n') return;
+            if (idx === 0) {
               const d: IData = {
-                type: 'text',
-                content: a,
-                page: data.length + 1,
+                type: 'synopsis',
+                content: str,
+                page: 1,
               }
               data.push(d)
-            }
-          }
-          if (idx === chapter.length - 1) {
-            const len = content.length;
-            const times = Math.ceil(len / PAGE_SIZE)
-            for (let i = 0; i < times; i++) {
-              if (i === 0) {
-                menu.push({ page: data.length + 1, title: chapter[idx].trim() })
+              menu.push({ page: 1, title: '简介' })
+            } else {
+              const len = str.length;
+              const times = Math.ceil(len / PAGE_SIZE)
+              for (let i = 0; i < times; i++) {
+                if (i === 0) {
+                  menu.push({ page: data.length + 1, title: chapter[idx - 1].trim() })
+                }
+                const a = str.substr(i * PAGE_SIZE, PAGE_SIZE)
+                const d: IData = {
+                  type: 'text',
+                  content: a,
+                  page: data.length + 1,
+                }
+                data.push(d)
               }
-              const a = str.substr(i * PAGE_SIZE, PAGE_SIZE)
-              const d: IData = {
-                type: 'text',
-                content: a,
-                page: data.length + 1,
-              }
-              data.push(d)
             }
-          }
-        })
+            if (idx === chapter.length - 1) {
+              const len = content.length;
+              const times = Math.ceil(len / PAGE_SIZE)
+              for (let i = 0; i < times; i++) {
+                if (i === 0) {
+                  menu.push({ page: data.length + 1, title: chapter[idx].trim() })
+                }
+                const a = str.substr(i * PAGE_SIZE, PAGE_SIZE)
+                const d: IData = {
+                  type: 'text',
+                  content: a,
+                  page: data.length + 1,
+                }
+                data.push(d)
+              }
+            }
+          })
+        }
         const textData: ITextData = { id, size, pages: data.length, data, menu, currentPage: 1, name };
         const booksData = (books) || [];
         const textsData = (texts) || [];
@@ -123,8 +143,8 @@ class HomePage extends React.Component<Props> {
         // console.log("HomePage -> reader.onload -> booksData", booksData)
         textsData.push(textData)
         // console.log("HomePage -> reader.onload -> textsData", textsData)
-        dispatch(updateBooks({ data: booksData }))
-        dispatch(updateTexts({ data: textsData }))
+        dispatch(updateLocal({ books: booksData }))
+        dispatch(updateLocal({ texts: textsData }))
         self.fileRefs.value = null
       };
       // 设置以什么方式读取文件，这里以文本方式
@@ -138,7 +158,10 @@ class HomePage extends React.Component<Props> {
       return chapter;
     }
     chapter = txt.split('\n').filter((e: any) => e.includes('章 '))
-    return chapter;
+    if (chapter.length > 100) {
+      return chapter;
+    }
+    return false;
   }
 
   getName = (txt: any, file: any) => {
@@ -157,7 +180,11 @@ class HomePage extends React.Component<Props> {
   }
 
   getAuthor = (txt: any) => {
-    return txt.split('\n').filter((e: any) => e.includes('作者'))[0].split("作者：")[1]
+    const t = txt.split('\n').filter((e: any) => e.includes('作者'));
+    if (t.length > 0) {
+      return t[0].split("作者：")[1]
+    }
+    return '未知';
   }
 
   menus = [
@@ -218,7 +245,7 @@ class HomePage extends React.Component<Props> {
 
   bookList = (item: IBookData, idx: number) => {
     return (
-      <div className={`book-item ${idx !== 0 && idx % 5 === 0 ? 'book-item-last' : ''}`} key={item.id}>
+      <div className={`book-item ${idx !== 0 && idx % 5 === 0 ? 'book-item-last' : ''}`} key={item.id} onClick={() => this.onBookClick(item)}>
         <div className="i-top-bg" style={{ backgroundColor: COLOR[Number(item.id) % COLOR.length] }}>
           <div className="i-top-name">{item.name}</div>
           <div className="i-top-author">{item.author}</div>
@@ -233,14 +260,18 @@ class HomePage extends React.Component<Props> {
     )
   }
 
+  onBookClick = (item: IBookData) => {
+    this.props.history.push(`${pathConfig.book}/${item.id}`)
+  }
+
   onDelete = (item: IBookData) => {
     const { id } = item;
     const { dispatch, local } = this.props;
     const { texts, books } = local;
     const booksData = books.data.filter((e: IBookData) => e.id !== id)
     const textsData = texts.data.filter((e: IBookData) => e.id !== id)
-    dispatch(updateBooks({ data: booksData }))
-    dispatch(updateTexts({ data: textsData }))
+    dispatch(updateLocal({ books: booksData }))
+    dispatch(updateLocal({ texts: textsData }))
   }
 
   render() {
@@ -252,7 +283,7 @@ class HomePage extends React.Component<Props> {
           <div className="header-button">
             <span className="sort">{this.sortWay()}</span>
             <span className="manage" onClick={this.onManageClick}>
-              {isManage ? '取消' : '管理'}
+              <a>{isManage ? '取消' : '管理'}</a>
             </span>
             <span className="file">
               添加<input type="file" name="" id="" onChange={this.onInputFile} ref={(c: any) => this.fileRefs = c} />
@@ -261,7 +292,7 @@ class HomePage extends React.Component<Props> {
         </div>
         <div className="p-book-list">
           {
-            booksData.map((item: IBookData, idx: number) => this.bookList(item, idx))
+            booksData && booksData.map((item: IBookData, idx: number) => this.bookList(item, idx))
           }
         </div>
       </div>

@@ -15,7 +15,7 @@
         margin-left: 20px;
       }
       .manage {
-        margin-right: 60px;
+        margin-right: 40px;
       }
       .file {
         position: absolute;
@@ -24,6 +24,7 @@
         width: 60px;
         line-height: 60px;
         text-align: center;
+        color: #1890ff;
       }
       .file input {
         position: absolute;
@@ -34,7 +35,8 @@
         width: 60px;
       }
       .file:hover {
-        color: #00aeff;
+        color: #ff004c;
+        cursor: pointer;
       }
     }
   }

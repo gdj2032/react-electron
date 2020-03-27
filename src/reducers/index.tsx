@@ -3,7 +3,7 @@ import local from './local';
 import { reduxStore } from 'utils/visible';
 
 const appReducer = combineReducers({
-  local,
+  ...local,
 });
 
 const rootReducer = (state: any, action: any) => {

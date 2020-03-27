@@ -5,6 +5,5 @@ const UPDATE = (type: any, value: any) => (dispatch: any) => {
 };
 
 
-export const updateBooks = (value: any) => (dispatch: any) => dispatch(UPDATE('books', value));
+export const updateLocal = (value: any) => (dispatch: any) => dispatch(UPDATE('local', value));
 
-export const updateTexts = (value: any) => (dispatch: any) => dispatch(UPDATE('texts', value));

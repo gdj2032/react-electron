@@ -11,7 +11,7 @@ const routeConfig: CustomRouteProps[] = [
     exact: true,
   },
   {
-    path: pathConfig.book,
+    path: [`${pathConfig.book}/:id`, pathConfig.book],
     component: BookPage,
     exact: true,
   },

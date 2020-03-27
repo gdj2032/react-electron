@@ -1,21 +1,15 @@
-import { combineReducers } from 'redux';
 import { createReducer } from 'redux-act';
 import types from 'actions/types';
 
-const typeBooks: any = types.books;
-const typeTexts: any = types.texts;
+const typeLocal: any = types.local;
 
-const local = combineReducers({
-  books: createReducer({
-    [typeBooks]: (state, payload) => ({ ...state, ...payload.value }),
+const local = {
+  local: createReducer({
+    [typeLocal]: (state, payload) => ({ ...state, ...payload.value }),
   }, {
-    data: [],
+    books: [],
+    texts: [],
   }),
-  texts: createReducer({
-    [typeTexts]: (state, payload) => ({ ...state, ...payload.value }),
-  }, {
-    data: [],
-  }),
-});
+}
 
 export default local;
