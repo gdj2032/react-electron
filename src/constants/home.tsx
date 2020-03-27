@@ -1,5 +1,22 @@
 export const PAGE_SIZE = 1000;
 
+export const APP_NAME = 'Txt小说阅读器'
+
+export const CONTENT_TYPE = {
+  text: 'text',
+  synopsis: 'synopsis',
+  toString: (key: any) => {
+    switch (key) {
+      case CONTENT_TYPE.text:
+        return '正文'
+      case CONTENT_TYPE.synopsis:
+        return '简介'
+      default:
+        return '未知'
+    }
+  }
+}
+
 export const COLOR = [
   '#FF7032',
   '#FFC141',

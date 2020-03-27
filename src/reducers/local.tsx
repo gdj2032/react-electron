@@ -9,6 +9,7 @@ const local = {
   }, {
     books: [],
     texts: [],
+    aaa: null,
   }),
 }
 

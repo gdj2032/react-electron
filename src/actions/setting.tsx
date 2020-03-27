@@ -6,4 +6,3 @@ const UPDATE = (type: any, value: any) => (dispatch: any) => {
 
 
 export const updateLocal = (value: any) => (dispatch: any) => dispatch(UPDATE('local', value));
-

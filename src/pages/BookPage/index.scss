@@ -1,0 +1,47 @@
+.g-book {
+  h1 {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 32px;
+  }
+  .back {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+  }
+  .content {
+    padding: 20px 20px;
+    line-height: 30px;
+    font-size: 14px;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-line;
+  }
+  .current_page {
+    position: fixed;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    text-align: center;
+  }
+  .top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: 99;
+    .top-bar-item {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: none;
+      background-color: rgba($color: #000000, $alpha: .5);
+    }
+    .top-bar-item-active {
+      display: block;
+    }
+  }
+}

@@ -7,6 +7,7 @@ interface IBookData {
   createTime: Date; //添加时间
   modifyTime?: Date; //最后一次看书时间
   size: number; //txt大小 字节
+  txt?: string;
 }
 
 interface ITextData {
@@ -14,7 +15,8 @@ interface ITextData {
   data: IData[]; // 分页数据
   pages: number; //总页数
   size: number; //txt大小 字节
-  currentPage: number; //最后一次看书的页码
+  currentPage: number; //最后一次看书的章节
+  currentNumber?: number; //最后一次看书的章节页码
   menu: IMenu[] //目录
   name: string;
 }

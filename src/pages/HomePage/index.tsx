@@ -1,7 +1,6 @@
 import * as React from 'react';
 import './index.scss';
 import { connect } from 'react-redux';
-import { reduxStore } from 'utils/visible';
 import { message, Dropdown, Menu } from 'antd';
 import { unique } from 'utils';
 import { PAGE_SIZE, COLOR } from 'constants/index';
@@ -25,14 +24,6 @@ class HomePage extends React.Component<Props> {
     isManage: false,
   }
   componentDidMount() {
-    reduxStore.dispatch = this.props.dispatch;
-  }
-
-  componentWillReceiveProps(nextProps: any) {
-    this.setState({
-      booksData: this.props.local && this.props.local.books,
-      textsData: this.props.local && this.props.local.texts,
-    })
   }
 
   onInputFile = (e: any) => {
@@ -52,6 +43,7 @@ class HomePage extends React.Component<Props> {
       reader.onload = function () {
         // 当 FileReader 读取文件时候，读取的结果会放在 FileReader.result 属性中
         const txt: any = this.result;
+        console.log("HomePage -> reader.onload -> txt", txt)
         // const txt: any = ``
         const createTime = new Date()
         const id = createTime.getTime()
@@ -65,11 +57,12 @@ class HomePage extends React.Component<Props> {
           self.fileRefs.value = null
           return;
         }
-        const bookData: IBookData = { id, size, createTime, name, author }
+        const bookData: IBookData = { id, size, createTime, name, author, txt }
         let chapter = self.getChapter(txt);
         // 正文内容信息
         const data: IData[] = []
         const menu: IMenu[] = []
+        let content = txt;
         if (!chapter) {
           const len = txt.length;
           const times = Math.ceil(len / PAGE_SIZE)
@@ -77,7 +70,7 @@ class HomePage extends React.Component<Props> {
             if (i === 0) {
               menu.push({ page: data.length + 1, title: `${i + 1}` })
             }
-            const a = txt.substr(i * PAGE_SIZE, PAGE_SIZE)
+            const a = content.substr(i * PAGE_SIZE, PAGE_SIZE)
             const d: IData = {
               type: 'text',
               content: a,
@@ -87,7 +80,6 @@ class HomePage extends React.Component<Props> {
             menu.push({ page: data.length + 1, title: `${i + 1}` })
           }
         } else {
-          let content = txt;
           chapter = unique(chapter)
           chapter.map((item: any, idx: number) => {
             const arr = content.split(item)
@@ -103,36 +95,22 @@ class HomePage extends React.Component<Props> {
               data.push(d)
               menu.push({ page: 1, title: '简介' })
             } else {
-              const len = str.length;
-              const times = Math.ceil(len / PAGE_SIZE)
-              for (let i = 0; i < times; i++) {
-                if (i === 0) {
-                  menu.push({ page: data.length + 1, title: chapter[idx - 1].trim() })
-                }
-                const a = str.substr(i * PAGE_SIZE, PAGE_SIZE)
-                const d: IData = {
-                  type: 'text',
-                  content: a,
-                  page: data.length + 1,
-                }
-                data.push(d)
+              const d: IData = {
+                type: 'text',
+                content: str,
+                page: data.length + 1,
               }
+              data.push(d)
+              menu.push({ page: data.length, title: chapter[idx - 1] })
             }
             if (idx === chapter.length - 1) {
-              const len = content.length;
-              const times = Math.ceil(len / PAGE_SIZE)
-              for (let i = 0; i < times; i++) {
-                if (i === 0) {
-                  menu.push({ page: data.length + 1, title: chapter[idx].trim() })
-                }
-                const a = str.substr(i * PAGE_SIZE, PAGE_SIZE)
-                const d: IData = {
-                  type: 'text',
-                  content: a,
-                  page: data.length + 1,
-                }
-                data.push(d)
+              const d: IData = {
+                type: 'text',
+                content: str,
+                page: data.length + 1,
               }
+              data.push(d)
+              menu.push({ page: data.length + 1, title: chapter[idx] })
             }
           })
         }
@@ -245,8 +223,8 @@ class HomePage extends React.Component<Props> {
 
   bookList = (item: IBookData, idx: number) => {
     return (
-      <div className={`book-item ${idx !== 0 && idx % 5 === 0 ? 'book-item-last' : ''}`} key={item.id} onClick={() => this.onBookClick(item)}>
-        <div className="i-top-bg" style={{ backgroundColor: COLOR[Number(item.id) % COLOR.length] }}>
+      <div className={`book-item ${idx !== 0 && idx % 5 === 0 ? 'book-item-last' : ''}`} key={item.id}>
+        <div className="i-top-bg" style={{ backgroundColor: COLOR[Number(item.id) % COLOR.length] }} onClick={() => this.onBookClick(item)}>
           <div className="i-top-name">{item.name}</div>
           <div className="i-top-author">{item.author}</div>
         </div>
@@ -268,10 +246,15 @@ class HomePage extends React.Component<Props> {
     const { id } = item;
     const { dispatch, local } = this.props;
     const { texts, books } = local;
-    const booksData = books.data.filter((e: IBookData) => e.id !== id)
-    const textsData = texts.data.filter((e: IBookData) => e.id !== id)
+    const booksData = books.filter((e: IBookData) => e.id !== id)
+    const textsData = texts.filter((e: IBookData) => e.id !== id)
     dispatch(updateLocal({ books: booksData }))
     dispatch(updateLocal({ texts: textsData }))
+    if (booksData.length === 0) {
+      this.setState({ booksData, textsData, isManage: false })
+    } else {
+      this.setState({ booksData, textsData })
+    }
   }
 
   render() {
