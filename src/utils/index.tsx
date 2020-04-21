@@ -84,3 +84,10 @@ const unique = (arr: any[]) => {
   arr = arr.map((e: any) => e.trim())
   return Array.from(new Set(arr))
 }
+
+export /**
+ * 获取行高
+ *
+ * @param {number} fontSize
+ */
+const getLineHeight = (fontSize: number) => fontSize + 16;

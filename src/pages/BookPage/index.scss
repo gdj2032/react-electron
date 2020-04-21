@@ -1,47 +1,134 @@
 .g-book {
-  h1 {
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 32px;
+  min-width: 1000px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  .min-title {
+    position: fixed;
+    top: 4px;
+    left: 20px;
+    color: rgb(145, 145, 145);
+    font-size: 10px;
   }
-  .back {
+  .content {
+    width: 100%;
+    padding: 18px 20px;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre;
+    .content-title {
+      font-size: 24px;
+      font-weight: 400;
+      height: 30;
+    }
+  }
+  .fixed-div {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    .fixed-div-left, .fixed-div-right, .fixed-div-center {
+      flex: 1;
+      height: 100%;
+    }
+  }
+}
+
+.item-bg-color:hover,
+.item-font-size:hover,
+.drawer-back:hover,
+.menu-title:hover {
+  cursor: pointer;
+}
+
+
+.ant-drawer-body {
+  padding: 0;
+  .drawer-affix {
     position: fixed;
     top: 0;
     left: 0;
     z-index: 100;
+    width: 256px;
+    height: 200px;
+    background-color: rgb(216, 216, 216);
+    padding: 10px 24px;
   }
-  .content {
-    padding: 20px 20px;
+  .drawer-back {
+    font-size: 20px;
+    height: 30px;
     line-height: 30px;
-    font-size: 14px;
-    word-wrap: break-word;
-    word-break: break-all;
-    white-space: pre-line;
+    color: rgb(113, 26, 226);
   }
-  .current_page {
-    position: fixed;
-    bottom: 8px;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    text-align: center;
+  .drawer-item {
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+    justify-self: start;
+    align-items: center;
   }
-  .top-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 120px;
-    z-index: 99;
-    .top-bar-item {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: none;
-      background-color: rgba($color: #000000, $alpha: .5);
+  .drawer-page-turn {
+    height: 60px;
+    .drawer-switch {
+      height: 30px;
+      line-height: 30px;
     }
-    .top-bar-item-active {
-      display: block;
+    .drawer-switch-speed {
+      height: 30px;
+      line-height: 30px;
+      display: flex;
+      justify-self: start;
+      align-items: center;
+    }
+  }
+  .drawer-font-size {
+    width: 40px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    margin-left: 20px;
+    background-color: rgb(113, 26, 226);
+    color: #fff;
+    border-radius: 4px;
+  }
+  .drawer-font-size-inactive {
+    background-color: #ccc;
+  }
+  .drawer-item-bg {
+    display: flex;
+    justify-self: start;
+    align-items: center;
+    background-color: rgb(216, 216, 216);
+    flex-wrap: wrap;
+    .drawer-bg-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 15px;
+      margin-left: 8px;
+    }
+    .drawer-bg-color-active {
+      border: 1px solid rgb(255, 84, 61);
+    }
+    .menu-title {
+      height: 30px;
+      line-height: 30px;
+      font-size: 20px;
+      background-color: #fff;
+    }
+  }
+  .drawer-menu {
+    position: relative;
+    top: 180px;
+    overflow: auto;
+    .menu-title {
+      color: rgb(21, 126, 247);
+    }
+    .active-menu {
+      color: rgb(255, 84, 61);
+      font-size: 16px;
     }
   }
 }

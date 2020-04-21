@@ -23,8 +23,6 @@ class HomePage extends React.Component<Props> {
     textsData: this.props.local && this.props.local.texts,
     isManage: false,
   }
-  componentDidMount() {
-  }
 
   onInputFile = (e: any) => {
     const { dispatch } = this.props;
@@ -43,7 +41,7 @@ class HomePage extends React.Component<Props> {
       reader.onload = function () {
         // 当 FileReader 读取文件时候，读取的结果会放在 FileReader.result 属性中
         const txt: any = this.result;
-        console.log("HomePage -> reader.onload -> txt", txt)
+        // console.log("HomePage -> reader.onload -> txt", txt)
         // const txt: any = ``
         const createTime = new Date()
         const id = createTime.getTime()
@@ -51,7 +49,6 @@ class HomePage extends React.Component<Props> {
         const author = self.getAuthor(txt)
         const name = self.getName(txt, file)
         const isExit = books && books.find((e: any) => e.author === author && e.name === name);
-        console.log("HomePage -> reader.onload -> isExit", isExit)
         if (isExit) {
           message.error('小说已存在');
           self.fileRefs.value = null
@@ -131,11 +128,19 @@ class HomePage extends React.Component<Props> {
   }
 
   getChapter = (txt: any) => {
-    let chapter = txt.split('\n').filter((e: any) => e.includes('第') && e.includes('章'))
+    let chapter = txt.split('\n').filter((e: any) => e.includes('第') && e.includes('章 '))
+    if (chapter.length > 100) {
+      return chapter;
+    }
+    chapter = txt.split('\n').filter((e: any) => e.includes('第') && e.includes('章'))
     if (chapter.length > 100) {
       return chapter;
     }
     chapter = txt.split('\n').filter((e: any) => e.includes('章 '))
+    if (chapter.length > 100) {
+      return chapter;
+    }
+    chapter = txt.split('\n').filter((e: any) => e.includes('章'))
     if (chapter.length > 100) {
       return chapter;
     }
@@ -207,12 +212,10 @@ class HomePage extends React.Component<Props> {
     const { booksData } = this.state;
     if (id === 2) {
       const data = booksData.sort((a: any, b: any) => a.createTime > b.createTime)
-      console.log("HomePage -> onSortClick -> data", data)
       this.setState({ booksData: data })
     }
     if (id === 1) {
       const data = booksData.sort((a: any, b: any) => a.modifyTime > b.modifyTime)
-      console.log("HomePage -> onSortClick -> data", data)
       this.setState({ booksData: data })
     }
   }

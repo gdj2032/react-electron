@@ -7,7 +7,7 @@ interface IBookData {
   createTime: Date; //添加时间
   modifyTime?: Date; //最后一次看书时间
   size: number; //txt大小 字节
-  txt?: string;
+  txt?: string; //小说文本
 }
 
 interface ITextData {

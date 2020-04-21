@@ -8,12 +8,15 @@ import storage from 'redux-persist/lib/storage';
 const config = {
   key: 'key',
   storage: storage,
+  blacklist: [],
 };
+
+const __dev__ = process.env.NODE_ENV === 'development';
 
 export default function createAppStore() {
   const store = createStore(
     persistReducer(config, rootReducer),
-    applyMiddleware(thunk, logger),
+    __dev__ ? applyMiddleware(thunk, logger) : applyMiddleware(thunk),
   );
   const persistor: any = persistStore(store);
   return { store, persistor };
