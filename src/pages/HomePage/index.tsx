@@ -24,6 +24,10 @@ class HomePage extends React.Component<Props> {
     isManage: false,
   }
 
+  componentDidMount(){
+    // this.props.dispatch(updateLocal({texts:[],books:[]}))
+  }
+
   onInputFile = (e: any) => {
     const { dispatch } = this.props;
     // console.log("HomePage -> onInputFile -> dispatch", dispatch)

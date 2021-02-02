@@ -5,6 +5,7 @@
   "main": "public/main.js",
   "homepage": ".",
   "dependencies": {
+    "@babel/plugin-proposal-decorators": "^7.12.12",
     "@types/react-router-dom": "^4.3.4",
     "@types/react-share": "^2.1.1",
     "@types/redux-persist": "^4.3.1",
@@ -129,11 +130,6 @@
         "tsConfigFile": "/Users/tmind/MyProject/react-ts/tsconfig.test.json"
       }
     }
-  },
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
   },
   "browserslist": {
     "production": [

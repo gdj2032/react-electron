@@ -59,7 +59,7 @@ class BookPage extends React.Component<Props> {
     const cont: any = data.data && data.data.find((e: IData) => e.page === currentPage)
     this.setState({ data, currentPage, content: cont.content })
     document.title = data.name
-    this.getContentData(cont.content)
+    // this.getContentData(cont.content)
   }
 
   getContentData = (cont: string, isPrev?: boolean) => {
@@ -70,13 +70,14 @@ class BookPage extends React.Component<Props> {
     let cData: any[] = [];
     let text: string = '';
     let cHeight = 0;
-    const w = offsetWidth - 100; // 左右内边距40
+    const w = offsetWidth - 40; // 左右内边距40
     const maxFont = Math.ceil(w / fontSize) //一行最大字数
     t.map((e: string) => {
       // if (!e.trim()) return;
       // e = e.trim()
       const h = cData.length > 0 ? offsetHeight - 68 : offsetHeight - 100 // 标题32 上下内边距36 下一页高度32
       const len = e.length;
+      console.log("BookPage -> getContentData -> e", e)
       if (len > maxFont) {
         const lineNum = Math.ceil(len / maxFont)
         for (let i = 0; i < lineNum; i++) {
@@ -122,7 +123,7 @@ class BookPage extends React.Component<Props> {
     const pageNumber = currentPage + 1;
     const cont: any = data.data && data.data.find((e: IData) => e.page === pageNumber)
     console.log("BookPage -> onNext -> cont", cont)
-    this.getContentData(cont.content)
+    // this.getContentData(cont.content)
     this.setState({ currentPage: pageNumber, content: cont.content })
     const { texts } = this.props.local;
     texts.map((e: ITextData) => {
@@ -140,7 +141,7 @@ class BookPage extends React.Component<Props> {
       const pageNumber = currentPage - 1;
       const cont: any = data.data && data.data.find((e: IData) => e.page === pageNumber)
       console.log("BookPage -> onNext -> cont", cont)
-      this.getContentData(cont.content, true)
+      // this.getContentData(cont.content, true)
       this.setState({ currentPage: pageNumber, content: cont.content })
       const { texts } = this.props.local;
       texts.map((e: ITextData) => {
@@ -169,9 +170,9 @@ class BookPage extends React.Component<Props> {
       f -= 2;
     }
     this.props.dispatch(updateLocal({ fontSize: f }))
-    setTimeout(() => {
-      this.getContentData(this.state.content)
-    }, 100)
+    // setTimeout(() => {
+    //   this.getContentData(this.state.content)
+    // }, 100)
   }
 
   onChangeSwitch = (automaticNext: any) => {
@@ -203,7 +204,7 @@ class BookPage extends React.Component<Props> {
     const { page } = e;
     const { data } = this.state;
     const cont: any = data.data && data.data.find((e: IData) => e.page === page)
-    this.getContentData(cont.content)
+    // this.getContentData(cont.content)
     this.setState({ currentPage: page, content: cont.content })
     const { texts } = this.props.local;
     texts.map((e: ITextData) => {
@@ -272,7 +273,7 @@ class BookPage extends React.Component<Props> {
   }
 
   render() {
-    const { data, currentPage, contentData, contentDataPage } = this.state;
+    const { data, currentPage, content, contentDataPage } = this.state;
     const { fontColor, fontSize, backgroundColor } = this.props.local;
     const title = data && data.menu.find((e: IMenu) => e.page === currentPage).title;
     return (
@@ -281,11 +282,9 @@ class BookPage extends React.Component<Props> {
         {
           contentDataPage === 0 || <div className="min-title">{title}</div>
         }
+        <div className="content-title">{title}</div>
         <div className="content" style={{ color: fontColor, fontSize: `${fontSize}px`, lineHeight: `${getLineHeight(fontSize)}px` }}>
-          {
-            contentDataPage === 0 && <div className="content-title">{title}</div>
-          }
-          {contentData.length > 0 && contentData[contentDataPage]}
+          {content}
         </div>
         <div className="fixed-div">
           <div className="fixed-div-left" onClick={this.onPrev}></div>
