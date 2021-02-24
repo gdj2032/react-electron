@@ -20,7 +20,7 @@ interface IState {
   currentPage: number;
   content: string;
   showMenu: boolean;
-  contentData: any;
+  contentData: any[];
   contentDataPage: number;
   showDrawer: boolean;
   showChildDrawer: boolean;
@@ -59,7 +59,7 @@ class BookPage extends React.Component<Props> {
     const cont: any = data.data && data.data.find((e: IData) => e.page === currentPage)
     this.setState({ data, currentPage, content: cont.content })
     document.title = data.name
-    // this.getContentData(cont.content)
+    this.getContentData(cont.content)
   }
 
   getContentData = (cont: string, isPrev?: boolean) => {
@@ -105,6 +105,7 @@ class BookPage extends React.Component<Props> {
     if (cData.length === 0) {
       cData.push(text)
     }
+    console.log('cData = ', cData);
     this.setState({ contentData: cData, contentDataPage: isPrev ? cData.length - 1 : 0 })
   }
 
@@ -122,8 +123,8 @@ class BookPage extends React.Component<Props> {
     const { data, currentPage } = this.state;
     const pageNumber = currentPage + 1;
     const cont: any = data.data && data.data.find((e: IData) => e.page === pageNumber)
-    console.log("BookPage -> onNext -> cont", cont)
-    // this.getContentData(cont.content)
+    // console.log("BookPage -> onNext -> cont", cont)
+    this.getContentData(cont.content)
     this.setState({ currentPage: pageNumber, content: cont.content })
     const { texts } = this.props.local;
     texts.map((e: ITextData) => {
@@ -141,7 +142,7 @@ class BookPage extends React.Component<Props> {
       const pageNumber = currentPage - 1;
       const cont: any = data.data && data.data.find((e: IData) => e.page === pageNumber)
       console.log("BookPage -> onNext -> cont", cont)
-      // this.getContentData(cont.content, true)
+      this.getContentData(cont.content, true)
       this.setState({ currentPage: pageNumber, content: cont.content })
       const { texts } = this.props.local;
       texts.map((e: ITextData) => {
@@ -204,7 +205,7 @@ class BookPage extends React.Component<Props> {
     const { page } = e;
     const { data } = this.state;
     const cont: any = data.data && data.data.find((e: IData) => e.page === page)
-    // this.getContentData(cont.content)
+    this.getContentData(cont.content)
     this.setState({ currentPage: page, content: cont.content })
     const { texts } = this.props.local;
     texts.map((e: ITextData) => {
@@ -273,7 +274,7 @@ class BookPage extends React.Component<Props> {
   }
 
   render() {
-    const { data, currentPage, content, contentDataPage } = this.state;
+    const { data, currentPage, contentDataPage, contentData } = this.state;
     const { fontColor, fontSize, backgroundColor } = this.props.local;
     const title = data && data.menu.find((e: IMenu) => e.page === currentPage).title;
     return (
@@ -284,7 +285,7 @@ class BookPage extends React.Component<Props> {
         }
         <div className="content-title">{title}</div>
         <div className="content" style={{ color: fontColor, fontSize: `${fontSize}px`, lineHeight: `${getLineHeight(fontSize)}px` }}>
-          {content}
+          {contentData && contentData[contentDataPage]}
         </div>
         <div className="fixed-div">
           <div className="fixed-div-left" onClick={this.onPrev}></div>
